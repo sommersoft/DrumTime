@@ -2,9 +2,9 @@
 Drum set usage monitor, allowing for deposit &amp; expenditure functions.
 
 # Hardware Platform (indev)
-Adafruit Feather HUZZAH ESP8266
-LIS3DH 3-Axis Accelerometer (will use 2 if automating deposits)
+1. Adafruit Feather HUZZAH ESP8266
+2. LIS3DH 3-Axis Accelerometer (will use 2 if automating deposits)
 
 # Software Platform (indev)
-Arduino IDE
-Adafruit.IO
+1. Arduino IDE
+2. Adafruit.IO
