@@ -1,5 +1,5 @@
 # DrumTime
-Drum set usage monitor, allowing for deposit &amp; expenditure functions.
+Drum set "banking" project. Earn time practicing band instruments, play awesome drums in return!
 
 # Hardware Platform (indev)
 1. Adafruit Feather HUZZAH ESP8266
