@@ -22,7 +22,7 @@ void loop() {
   }
   
   if (io.status() == AIO_CONNECTED) {
-    if (currMillis - activityMillis < 300000) {pixSingle_blu(0);}
+    if (currMillis - activityMillis < 300000) { pixSingle_blu(0); }
     //Serial.print(F("io.status: ")); Serial.println(io.status());
   } else { //if we aren't connected, no use in continuing
     pixOff();
@@ -40,11 +40,11 @@ void loop() {
        * Read vibration sensor for deposits. vibe is attached to band equipment (bells & snare pad)
        * and connection is made with 3.5mm audio cable. vibes are read through GPIO12.
       */      
-        int vibraVal = digitalRead(VIBE);
+        uint8_t vibraVal = digitalRead(VIBE);
         if (vibraVal < 1) {
           deposits_new++;
-          activityMillis = millis();
-          Serial.print(F("Vibe read (100): ")); Serial.println(vibraVal);
+          activityMillis = currMillis;
+          Serial.print(F("Vibe read (100)"));
           TELEM_STATUS = TELEM_NORM_ACTIVE;
         }
       
@@ -58,7 +58,7 @@ void loop() {
         if ((beat & 0x30)) {
           Serial.println(F("Clickin Beat Y0!!"));
           expend_new++;
-          activityMillis = millis();
+          activityMillis = currMillis;
           TELEM_STATUS = TELEM_NORM_ACTIVE;
         }
       } else {
@@ -71,13 +71,12 @@ void loop() {
        * THIS WAS ADDED TO DOUBLE THE VIBE RATE; IT WOULDN'T REGISTER MUCH @ 100ms.
        * Read vibration sensor for deposits. vibe is attached to band equipment (bells & snare pad)
        * and connection is made with 3.5mm audio cable. vibes are read through GPIO12.
-      */      
-        int vibraVal = digitalRead(VIBE);
+      */
+        uint8_t vibraVal = digitalRead(VIBE);
         if (vibraVal < 1) {
           deposits_new++;
-          activityMillis = millis();
-          Serial.print(F("Vibe read (50): "));
-          Serial.println(vibraVal);
+          activityMillis = currMillis;
+          Serial.println(F("Vibe read"));
         }
     }
 
@@ -92,8 +91,8 @@ void loop() {
       Serial.print(F("Dep: ")); Serial.print(deposits_new); Serial.print("\t Exp: "); Serial.println(expend_new);
       //if (deposits_new >=60) { deposits_mid++;}
       //if (expend_new >= 60) {expend_mid++;}
-      if (deposits_new > 0) { deposits_mid = deposits_new;} //for testing
-      if (expend_new > 0) {expend_mid = expend_new;} //for testing
+      if (deposits_new > 0) { deposits_mid = deposits_new; } //for testing
+      if (expend_new > 0) { expend_mid = expend_new; } //for testing
       Serial.print(F("Dep mid: ")); Serial.print(deposits_mid);
       Serial.print(F("\t Exp mid: ")); Serial.println(expend_mid);
       
@@ -155,10 +154,9 @@ void loop() {
       if (deposits_mid > 0 || expend_mid > 0) { 
         pubAIO(); 
       } else {
-        pubMillis = millis();
+        pubMillis = currMillis;
       }
     }
-
   } else {
     //Serial.println(freetime_start);
     TELEM_STATUS = TELEM_NORM_FREETIME;
@@ -209,7 +207,7 @@ void pubAIO() {
   
   if (deposits_final > 0) {DrumTime->set("deposits", deposits_final);}
   if (expend_final > 0) {DrumTime->set("expenditures", expend_final);}
-  if (balance_new > balance_start) {DrumTime->set("balance", balance_new);}
+  if (balance_new != balance_start) {DrumTime->set("balance", balance_new);}
   DrumTime->save();
   
   Serial.print(F("New Balance: "));
