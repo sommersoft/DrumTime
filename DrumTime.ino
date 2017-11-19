@@ -18,6 +18,9 @@ void setup() {
   lis.setClick(1, LIS_THRESH);
 
   pinMode(VIBE, INPUT_PULLUP); //setup pin for the vibration sensor
+
+  DrumTime->onMessage("freetime", freetime);//listen to toggle accounting
+  DrumTime->onMessage("balance", balance_sub);//listen to adjust outside of on-board accounting
   
   Serial.print("Connecting to DrumTime AIO");
   pixels.begin();
@@ -25,11 +28,11 @@ void setup() {
   pixels.show();
   io.connect();
 
-  DrumTime->onMessage("freetime", freetime);//listen to toggle accounting
-  DrumTime->onMessage("balance", balance_sub);//listen to adjust outside of on-board accounting
+  //DrumTime->onMessage("freetime", freetime);//listen to toggle accounting
+  //DrumTime->onMessage("balance", balance_sub);//listen to adjust outside of on-board accounting
   //DrumTime->onMessage("deposits", deposits_sub);//listen to adjust outside of on-board accounting
 
-  int p = 1;
+  uint8_t p = 1;
   while(io.status() < AIO_CONNECTED) {
     //if (io.status() == AIO_DISCONNECTED) {break;}
     Serial.print(".");
