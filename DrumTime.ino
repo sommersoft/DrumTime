@@ -28,15 +28,10 @@ void setup() {
   pixels.show();
   io.connect();
 
-  //DrumTime->onMessage("freetime", freetime);//listen to toggle accounting
-  //DrumTime->onMessage("balance", balance_sub);//listen to adjust outside of on-board accounting
-  //DrumTime->onMessage("deposits", deposits_sub);//listen to adjust outside of on-board accounting
-
   uint8_t p = 1;
   while(io.status() < AIO_CONNECTED) {
-    //if (io.status() == AIO_DISCONNECTED) {break;}
+    if (io.status() == AIO_DISCONNECTED) {break;}
     Serial.print(".");
-    //Serial.print(F("io.status: ")); Serial.println(io.status());
     pixOff();
     pixSingle_blu(p);
     if (p != 6) {
@@ -47,7 +42,11 @@ void setup() {
     delay(200);
   }
   pixOff();
-  if (io.status() == AIO_CONNECTED) {pixSingle_blu(0);}
+  if (io.status() == AIO_CONNECTED) {
+    pixSingle_blu(0);
+  } else {
+    pixSingle_red(0);
+  }
   Serial.println();
   Serial.println(io.statusText());
 
@@ -82,7 +81,3 @@ void setup() {
   preMillis = millis();
   minuteMillis = millis();
 }
-
-
-
-
