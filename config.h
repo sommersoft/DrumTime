@@ -28,8 +28,10 @@ long expend_mid = 0;
 long expend_final = 0;
 
 //Set LIS3DH vars
-Adafruit_LIS3DH lis = Adafruit_LIS3DH();
-#define LIS_THRESH 10  //used to set the click threshold (sensitivity)
+Adafruit_LIS3DH lis_exp = Adafruit_LIS3DH(); // LIS3DH for drumset
+Adafruit_LIS3DH lis_dep = Adafruit_LIS3DH(); // LIS3DH for band equipment
+#define LIS_EXP_THRESH 20  //used to set the click threshold (sensitivity)
+#define LIS_DEP_THRESH 10  //used to set the click threshold (sensitivity)
 
 //Set Vibration Sensor vars
 #define VIBE 12 //on GPIO12
