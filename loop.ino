@@ -243,23 +243,3 @@ void balance_sub(AdafruitIO_Data *data) {
   balance_start = atol(data->value());
   Serial.println(balance_start);
 }
-
-/*
- * We'll listen for deposit updates in case deposits are made
- * off-board (e.g. on AIO dashboard). Think along the lines of
- * "Good Job, here's a reward".
- * This probably won't happen much, since it's easier to just update
- * the balance from the AIO dashboard (less calculation).
- * 
- * UPDATE: circular reference is circular. everytime the HUZZAH
- * sends a deposit, MQTT triggers an update and it gets added
- * to deposits_new. Its like BOGO, only reverse. Pondering must
- * happen. (statefull or value matching are initial thoughts)
- */
-void deposits_sub(AdafruitIO_Data *data) {
-  Serial.print("received drumtime.deposits: ");
-  deposits_final += atol(data->value());
-  Serial.println(deposits_final);
-}
-
-
