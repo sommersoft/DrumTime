@@ -31,7 +31,7 @@ void loop() {
   }
   pushTelem();
   if (currMillis - preMillis >= 100) {
-      /*
+w      /*
        * Read LIS3DH #1 for expenditures. LIS3DH is attached to the drum set, and click is used to
        * simplify the code (vs using accel data and doing math). Also checks if the LIS3DH is
        * working; if not, it tries to reconnect...if reconnect fails telemtry status is updated.
@@ -64,7 +64,7 @@ void loop() {
         uint8_t band = lis_dep.getClick();
         if ((band & 0x30)) {
           Serial.println(F("You've earned a click!"));
-          deposit_new++;
+          deposits_new++;
           activityMillis = currMillis;
           TELEM_STATUS = TELEM_NORM_ACTIVE;
         }
