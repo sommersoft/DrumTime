@@ -14,7 +14,7 @@ void setup() {
   } else {
     Serial.println("LIS3DH started.");
     lis_exp.setRange(LIS3DH_RANGE_2_G);
-    lis_exp.setClick(1, LIS_THRESH);
+    lis_exp.setClick(1, LIS_EXP_THRESH);
   }
 
   DrumTime->onMessage("freetime", freetime);//listen to toggle accounting
