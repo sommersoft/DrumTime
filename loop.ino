@@ -30,32 +30,15 @@ void loop() {
     return;
   }
   pushTelem();
-  if (String(freetime_start) != "ON") {
-    TELEM_STATUS = TELEM_NORM_IDLE; //always start with NORM_IDLE and deduce from there
-    /* 
-     *  Get sensor data every 100ms (10 times per second).
-     */
-    if (currMillis - preMillis >= 100) {
+  if (currMillis - preMillis >= 100) {
       /*
-       * Read vibration sensor for deposits. vibe is attached to band equipment (bells & snare pad)
-       * and connection is made with 3.5mm audio cable. vibes are read through GPIO12.
-      */      
-        uint8_t vibraVal = digitalRead(VIBE);
-        if (vibraVal < 1) {
-          deposits_new++;
-          activityMillis = currMillis;
-          Serial.print(F("Vibe read (100)"));
-          TELEM_STATUS = TELEM_NORM_ACTIVE;
-        }
-      
-      /*
-       * Read LIS3DH for expenditures. LIS3DH is attached to the drum set, and click is used to
+       * Read LIS3DH #1 for expenditures. LIS3DH is attached to the drum set, and click is used to
        * simplify the code (vs using accel data and doing math). Also checks if the LIS3DH is
        * working; if not, it tries to reconnect...if reconnect fails telemtry status is updated.
       */
-      if (lis.isAlive()) {
-        uint8_t beat = lis.getClick();
-        if ((beat & 0x30)) {
+      if (lis_exp.isAlive()) {
+        uint8_t drum = lis_exp.getClick();
+        if ((drum & 0x30)) {
           Serial.println(F("Clickin Beat Y0!!"));
           expend_new++;
           activityMillis = currMillis;
@@ -63,21 +46,37 @@ void loop() {
         }
       } else {
         //Serial.println(F("LIS DISCONNECTED"));
-        if (! lis.begin(0x18)) { TELEM_STATUS = TELEM_ERROR_LIS; }
+        if (! lis_exp.begin(0x18)) {
+          TELEM_STATUS = TELEM_ERROR_LIS;
+        } else {
+          lis_exp.setRange(LIS3DH_RANGE_2_G);
+          lis_exp.setClick(1, LIS_EXP_THRESH);
+        }
+      }
+
+      /*
+       * Read LIS3DH #2 for deposits. LIS3DH #2 is attached to band equipment, and click is used to
+       * simplify the code (vs using accel data and doing math). Also checks if LIS3DH #2 is
+       * working; if not, it tries to reconnect. We don't need constant connection, so if it isn't
+       * connected, we don't show a telemetry error. This LIS3DH uses the secondary address (0x19).
+      */
+      if (lis_dep.isAlive()) {
+        uint8_t band = lis_dep.getClick();
+        if ((band & 0x30)) {
+          Serial.println(F("You've earned a click!"));
+          deposit_new++;
+          activityMillis = currMillis;
+          TELEM_STATUS = TELEM_NORM_ACTIVE;
+        }
+      } else {
+        //Serial.println(F("LIS2 DISCONNECTED"));
+        if (lis_dep.begin(0x19)) {
+          lis_dep.setRange(LIS3DH_RANGE_8_G); // even out the range between snare pad & bells (needs cal)
+          lis_dep.setDataRate(LIS3DH_DATARATE_100_HZ); // slow the data rate down due to lenght of cable
+          lis_dep.setClick(1, LIS_DEP_THRESH);
+        }
       }
       preMillis = currMillis;
-    } else if (currMillis - preMillis >= 50) {
-      /*
-       * THIS WAS ADDED TO DOUBLE THE VIBE RATE; IT WOULDN'T REGISTER MUCH @ 100ms.
-       * Read vibration sensor for deposits. vibe is attached to band equipment (bells & snare pad)
-       * and connection is made with 3.5mm audio cable. vibes are read through GPIO12.
-      */
-        uint8_t vibraVal = digitalRead(VIBE);
-        if (vibraVal < 1) {
-          deposits_new++;
-          activityMillis = currMillis;
-          Serial.println(F("Vibe read"));
-        }
     }
 
     /*
