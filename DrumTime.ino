@@ -9,15 +9,13 @@ void setup() {
   Serial.begin(115200);
   while(! Serial);
   //Serial.setDebugOutput(true);
-  if (! lis.begin(0x18)) {
-    Serial.println("Couldn't start LIS3DH.");
-    while (1);
+  if (! lis_exp.begin(0x18)) {
+    Serial.println("Couldn't start LIS3DH #1.");
+  } else {
+    Serial.println("LIS3DH started.");
+    lis_exp.setRange(LIS3DH_RANGE_2_G);
+    lis_exp.setClick(1, LIS_THRESH);
   }
-  Serial.println("LIS3DH started.");
-  lis.setRange(LIS3DH_RANGE_2_G);
-  lis.setClick(1, LIS_THRESH);
-
-  pinMode(VIBE, INPUT_PULLUP); //setup pin for the vibration sensor
 
   DrumTime->onMessage("freetime", freetime);//listen to toggle accounting
   DrumTime->onMessage("balance", balance_sub);//listen to adjust outside of on-board accounting
