@@ -33,9 +33,6 @@ Adafruit_LIS3DH lis_dep = Adafruit_LIS3DH(); // LIS3DH for band equipment
 #define LIS_EXP_THRESH 20  //used to set the click threshold (sensitivity)
 #define LIS_DEP_THRESH 10  //used to set the click threshold (sensitivity)
 
-//Set Vibration Sensor vars
-#define VIBE 12 //on GPIO12
-
 //Set timing vars
 unsigned long telemMillis;
 unsigned long pubMillis;
