@@ -46,12 +46,7 @@ w      /*
         }
       } else {
         //Serial.println(F("LIS DISCONNECTED"));
-        if (! lis_exp.begin(0x18)) {
-          TELEM_STATUS = TELEM_ERROR_LIS;
-        } else {
-          lis_exp.setRange(LIS3DH_RANGE_2_G);
-          lis_exp.setClick(1, LIS_EXP_THRESH);
-        }
+        i2c_restart(false);
       }
 
       /*
@@ -70,11 +65,7 @@ w      /*
         }
       } else {
         //Serial.println(F("LIS2 DISCONNECTED"));
-        if (lis_dep.begin(0x19)) {
-          lis_dep.setRange(LIS3DH_RANGE_8_G); // even out the range between snare pad & bells (needs cal)
-          lis_dep.setDataRate(LIS3DH_DATARATE_100_HZ); // slow the data rate down due to lenght of cable
-          lis_dep.setClick(1, LIS_DEP_THRESH);
-        }
+        i2c_restart(true);
       }
       preMillis = currMillis;
     }
@@ -242,4 +233,30 @@ void balance_sub(AdafruitIO_Data *data) {
   Serial.print("received drumtime.balance: ");
   balance_start = atol(data->value());
   Serial.println(balance_start);
+}
+
+/*
+ * i2c_restart enables "hotswapping" the i2c interface for the LIS3DH
+ * boards. it's primarily for the accels attached to band equipment
+ * which isn't always connected (rarely in fact).
+ */
+void i2c_restart(bool both) {
+  //Serial.print("twi_status: "); Serial.println(twi_status());
+  twi_stop(); // shutdown i2c so that we can re-latch the clocks
+  delay(50); //anything lower than 50ms seemed to introduce problems on reconnect
+  
+  if (! lis_exp.begin(0x18)) {
+    TELEM_STATUS = TELEM_ERROR_LIS;
+  } else {
+    lis_exp.setRange(LIS3DH_RANGE_2_G);
+    lis_exp.setClick(1, LIS_EXP_THRESH);
+  }
+
+  if (! both) { return; }
+  
+  if (lis_dep.begin(0x19)) {
+    lis_dep.setRange(LIS3DH_RANGE_8_G); // even out the range between snare pad & bells (needs cal)
+    lis_dep.setDataRate(LIS3DH_DATARATE_200_HZ); // slow the data rate down due to lenght of cable
+    lis_dep.setClick(1, LIS_DEP_THRESH);
+  }
 }
